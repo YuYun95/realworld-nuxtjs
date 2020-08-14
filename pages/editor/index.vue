@@ -33,7 +33,10 @@
 
 <script>
 export default {
-  name: "EditorIndex"
+  name: 'EditorIndex',
+
+  // 在路由匹配组件渲染之前会执行中间件处理
+  middleware: 'authenticated',
 }
 </script>
 
