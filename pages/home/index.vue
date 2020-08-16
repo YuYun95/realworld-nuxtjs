@@ -14,11 +14,19 @@
         <div class="col-md-9">
           <div class="feed-toggle">
             <ul class="nav nav-pills outline-active">
-              <li class="nav-item">
-                <a class="nav-link disabled" href="">Your Feed</a>
+              <li v-if="user" class="nav-item">
+                <nuxt-link class="nav-link" :class="{active: tab ==='your_feed'}"
+                           :to="{name: 'home',query:{tab:'your_feed'}}" exact>Your Feed
+                </nuxt-link>
               </li>
               <li class="nav-item">
-                <a class="nav-link active" href="">Global Feed</a>
+                <nuxt-link class="nav-link" :class="{active: tab ==='global_feed'}" :to="{name: 'home'}" exact>Global Feed
+                </nuxt-link>
+              </li>
+              <li v-if="tag" class="nav-item">
+                <nuxt-link class="nav-link" :class="{active: tab ==='tag'}"
+                           :to="{name: 'home',query:{tab:'tag',tag:tag}}" exact># {{tag}}
+                </nuxt-link>
               </li>
             </ul>
           </div>
@@ -26,7 +34,7 @@
           <div v-for="article in articles" :key="article.slug" class="article-preview">
             <div class="article-meta">
               <nuxt-link :to="{ name:'profile', params:{ username:article.author.username }}">
-                <img :src="article.author.image" />
+                <img :src="article.author.image"/>
               </nuxt-link>
               <div class="info">
                 <nuxt-link :to="{name:'profile', params:{ username:article.author.username }}" class="author">
@@ -49,7 +57,11 @@
           <nav>
             <ul class="pagination">
               <li class="page-item" :class="{active: item === page}" v-for="item in totalPage" :key="item">
-                <nuxt-link class="page-link" :to="{ name: 'home', query: { page: item }}">
+                <nuxt-link
+                        class="page-link"
+                        :to="{ name: 'home',
+                        query: { page: item, tag: $route.query.tag, tab: tab}}"
+                >
                   {{item}}
                 </nuxt-link>
               </li>
@@ -63,14 +75,13 @@
             <p>Popular Tags</p>
 
             <div class="tag-list">
-              <a href="" class="tag-pill tag-default">programming</a>
-              <a href="" class="tag-pill tag-default">javascript</a>
-              <a href="" class="tag-pill tag-default">emberjs</a>
-              <a href="" class="tag-pill tag-default">angularjs</a>
-              <a href="" class="tag-pill tag-default">react</a>
-              <a href="" class="tag-pill tag-default">mean</a>
-              <a href="" class="tag-pill tag-default">node</a>
-              <a href="" class="tag-pill tag-default">rails</a>
+              <nuxt-link
+                      v-for="item in tags"
+                      :to="{name:'home', query:{tag:item, tab:'tag'}}"
+                      :key="item"
+                      class="tag-pill tag-default">
+                {{item}}
+              </nuxt-link>
             </div>
           </div>
         </div>
@@ -82,29 +93,47 @@
 </template>
 
 <script>
-import { getArticles } from '@/api/article'
+import {mapState} from 'vuex'
+import {getArticles, getYourFeedArticles} from '@/api/article'
+import {getTags} from '@/api/tag'
 
 export default {
   name: 'HomeIndex',
 
-  watchQuery: ['page'],
+  watchQuery: ['page', 'tag', 'tab'],
 
-  async asyncData({ query }) {
+  async asyncData({query}) {
     const page = Number.parseInt(query.page || 1)
     const limit = 20
-    const { data } = await getArticles({
-      limit,
-      offset: (page - 1) * limit
-    })
+    const tab = query.tab || 'global_feed'
+    const tag = query.tag
+    const loadArticles = tab === 'global_feed' ? getArticles : getYourFeedArticles
+
+    const [articleRes, tagRes] = await Promise.all([
+      loadArticles({
+        limit,
+        tag,
+        offset: (page - 1) * limit
+      }),
+      getTags()
+    ])
+
+    const {articles, articlesCount} = articleRes.data
+    const {tags} = tagRes.data
+
     return {
-      articles: data.articles,
-      articlesCount: data.articlesCount,
-      limit,
-      page
+      articles, // 文章列表
+      articlesCount, // 文章总数
+      tags, // 标签列表
+      limit, // 每页大小
+      page, // 页码
+      tab, // 选项卡
+      tag // 数据标签
     }
   },
 
   computed: {
+    ...mapState(['user']),
     totalPage() {
       return Math.ceil(this.articlesCount / this.limit)
     }
