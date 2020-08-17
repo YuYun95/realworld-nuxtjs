@@ -49,5 +49,16 @@ module.exports = {
         }
       ])
     }
-  }
+  },
+
+  server:{
+    host: '0.0.0.0',
+    port: 3000
+  },
+
+  // 注册插件
+  plugins: [
+    '~/plugins/request.js', // 波浪线开头表示从根路径出发
+    '~/plugins/dayjs.js'
+  ]
 }
