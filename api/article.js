@@ -40,7 +40,7 @@ export const deFavorite = slug => {
 // 获取文章详情
 export const getArticle = slug => {
   return request({
-    method: 'GET',
+    method: 'get',
     url: `/api/articles/${slug}`,
   })
 }
@@ -48,7 +48,16 @@ export const getArticle = slug => {
 // 获取文章评论
 export const getComments = slug => {
   return request({
-    method: 'GET',
+    method: 'get',
     url: `/api/articles/${slug}/comments`,
+  })
+}
+
+// 添加评论
+export const addComment = (slug, body) => {
+  return request({
+    method: 'post',
+    url: `/api/articles/${slug}/comments`,
+    data: { body }
   })
 }

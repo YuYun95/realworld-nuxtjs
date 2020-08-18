@@ -25,27 +25,26 @@
 
       <div class="row">
         <div class="col-xs-12 col-md-8 offset-md-2">
-          <article-comment :article="article" />
-
+          <article-comment v-if="user" :article="article" />
+          <article-unlogin v-else />
         </div>
-
       </div>
-
     </div>
-
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { getArticle } from '@/api/article'
 import MarkdownIt from 'markdown-it'
 import ArticleMeta from './components/article-meta'
 import ArticleComment from './components/article-comment'
+import ArticleUnlogin from './components/article-unlogin'
 
 export default {
   name: 'ArticleIndex',
 
-  components: { ArticleComment, ArticleMeta },
+  components: { ArticleUnlogin, ArticleComment, ArticleMeta },
 
   async asyncData({ params }) {
     const { data } = await getArticle(params.slug)
@@ -68,6 +67,10 @@ export default {
         }
       ]
     }
+  },
+
+  computed: {
+    ...mapState(['user'])
   }
 }
 </script>
