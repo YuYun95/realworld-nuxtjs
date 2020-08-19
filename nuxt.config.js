@@ -13,37 +13,37 @@ module.exports = {
             {
               path: '', // 默认子路由
               name: 'home',
-              component: resolve(__dirname, 'pages/home/')
+              component: resolve(__dirname, 'pages/home')
             },
             {
               path: '/login', // 默认子路由
               name: 'login',
-              component: resolve(__dirname, 'pages/login/')
+              component: resolve(__dirname, 'pages/login')
             },
             {
               path: '/register', // 默认子路由
               name: 'register',
-              component: resolve(__dirname, 'pages/login/')
+              component: resolve(__dirname, 'pages/login')
             },
             {
               path: '/profile/:username',
               name: 'profile',
-              component: resolve(__dirname, 'pages/profile/')
+              component: resolve(__dirname, 'pages/profile')
             },
             {
               path: '/settings',
               name: 'settings',
-              component: resolve(__dirname, 'pages/settings/')
+              component: resolve(__dirname, 'pages/settings')
             },
             {
-              path: '/editor',
+              path: '/editor/:slug?',
               name: 'editor',
-              component: resolve(__dirname, 'pages/editor/')
+              component: resolve(__dirname, 'pages/editor')
             },
             {
               path: '/article/:slug',
               name: 'article',
-              component: resolve(__dirname, 'pages/article/')
+              component: resolve(__dirname, 'pages/article')
             }
           ]
         }

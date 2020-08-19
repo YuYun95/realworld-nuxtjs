@@ -6,7 +6,7 @@
 
         <h1>{{article.title}}</h1>
 
-        <article-meta :article="article" />
+        <article-meta :article="article" @updata="handleFollowArticle" @onFavorite="handleFavorite" />
 
       </div>
     </div>
@@ -20,7 +20,7 @@
       <hr />
 
       <div class="article-actions">
-        <article-meta :article="article" />
+        <article-meta :article="article" @updata="handleFollowArticle" @onFavorite="handleFavorite" />
       </div>
 
       <div class="row">
@@ -71,6 +71,22 @@ export default {
 
   computed: {
     ...mapState(['user'])
+  },
+
+  methods: {
+    handleFollowArticle(value) {
+      this.article.author.following = value
+    },
+
+    handleFavorite(value) {
+      if (value) {
+        this.article.favorited = value
+        this.article.favoritesCount += 1
+      } else {
+        this.article.favorited = value
+        this.article.favoritesCount += -1
+      }
+    }
   }
 }
 </script>
